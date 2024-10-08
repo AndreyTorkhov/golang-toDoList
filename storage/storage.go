@@ -2,6 +2,7 @@ package storage
 
 import (
     "context"
+    "database/sql"
     "fmt"
     "log"
 
@@ -12,9 +13,11 @@ import (
 
 type TaskRepository interface {
     GetAll() ([]model.Task, error)
+    GetByID(id int) (model.Task, error) 
     Add(task model.Task) error
     Delete(id int) error
     MarkDone(id int) error
+    GetFiltered(done *bool) ([]model.Task, error)
 }
 
 type PostgresTaskRepository struct {
@@ -87,6 +90,23 @@ func (r *PostgresTaskRepository) GetAll() ([]model.Task, error) {
     return tasks, nil
 }
 
+func (r *PostgresTaskRepository) GetByID(id int) (model.Task, error) {
+    var task model.Task
+    query := `SELECT id, title, done FROM tasks WHERE id = $1`
+
+    row := r.db.QueryRow(context.Background(), query, id)
+    err := row.Scan(&task.ID, &task.Title, &task.Done)
+
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return task, fmt.Errorf("task not found")
+        }
+        return task, fmt.Errorf("failed to get task: %w", err)
+    }
+    
+    return task, nil
+}
+
 func (r *PostgresTaskRepository) Add(task model.Task) error {
     query := `INSERT INTO tasks (title, done) VALUES ($1, $2)`
     _, err := r.db.Exec(context.Background(), query, task.Title, task.Done)
@@ -118,4 +138,35 @@ func (r *PostgresTaskRepository) MarkDone(id int) error {
 
     log.Println("Task marked as done")
     return nil
+}
+
+func (r *PostgresTaskRepository) GetFiltered(done *bool) ([]model.Task, error) {
+    var tasks []model.Task
+    query := "SELECT id, title, done FROM tasks"
+    var args []interface{}
+
+    if done != nil {
+        query += " WHERE done = $1"
+        args = append(args, *done)
+    }
+
+    rows, err := r.db.Query(context.Background(), query, args...)
+    if err != nil {
+        return nil, fmt.Errorf("failed to query tasks: %w", err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var task model.Task
+        if err := rows.Scan(&task.ID, &task.Title, &task.Done); err != nil {
+            return nil, fmt.Errorf("failed to scan task: %w", err)
+        }
+        tasks = append(tasks, task)
+    }
+
+    if err := rows.Err(); err != nil {
+        return nil, fmt.Errorf("rows iteration error: %w", err)
+    }
+
+    return tasks, nil
 }

@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   model.Task:
     properties:
@@ -8,8 +9,12 @@ definitions:
       title:
         type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: API для управления списком задач.
+  title: ToDo API
+  version: "1.0"
 paths:
   /tasks:
     get:
@@ -98,6 +103,38 @@ paths:
       summary: Удалить задачу
       tags:
       - tasks
+    get:
+      consumes:
+      - application/json
+      description: Возвращает задачу по указанному идентификатору
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Задача
+          schema:
+            $ref: '#/definitions/model.Task'
+        "404":
+          description: Задача не найдена
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить задачу по идентификатору
+      tags:
+      - tasks
   /tasks/{id}/done:
     patch:
       consumes:
@@ -129,6 +166,34 @@ paths:
               type: string
             type: object
       summary: Пометить задачу как выполненную
+      tags:
+      - tasks
+  /tasks/filter:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список задач с учетом фильтра по выполнению
+      parameters:
+      - description: Фильтр по выполнению (true для выполненных, false для невыполненных)
+        in: query
+        name: done
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список задач
+          schema:
+            items:
+              $ref: '#/definitions/model.Task'
+            type: array
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить задачи с фильтром по статусу выполнения
       tags:
       - tasks
 swagger: "2.0"
