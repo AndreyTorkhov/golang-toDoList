@@ -3,12 +3,21 @@ package main
 import (
     "log"
     "net/http"
+
     "todo-golang/internal/http-server/handlers"
     "todo-golang/storage"
+    _ "todo-golang/docs"
 
+    httpSwagger "github.com/swaggo/http-swagger"
     "github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
+
+// @title ToDo API
+// @version 1.0
+// @description API для управления списком задач.
+// @host localhost:8080
+// @BasePath /
 
 func main() {
     dsn := "postgres://postgres:Aat8912000!@localhost:5432"
@@ -27,6 +36,7 @@ func main() {
     r := chi.NewRouter()
     r.Use(middleware.Logger)
 
+    r.Get("/docs/*", httpSwagger.WrapHandler)
     h.SetupRoutes(r)
 
     log.Println("Server is running on port 8080")
