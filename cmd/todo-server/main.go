@@ -3,6 +3,7 @@ package main
 import (
     "log"
     "net/http"
+    "os"
 
     "todo-golang/internal/http-server/handlers"
     "todo-golang/storage"
@@ -20,7 +21,7 @@ import (
 // @BasePath /
 
 func main() {
-    dsn := "postgres://postgres:Aat8912000!@my_db:5432/tasks"
+    dsn := os.Getenv("DATABASE_URL")
 
     db, err := storage.NewPostgresDB(dsn)
     if err != nil {

@@ -15,6 +15,8 @@
 
 ## Установка
 
+`Перед использованием в корне проекта создайте файл .env и запишите в него переменные на прнимере файла example.env`
+
 1. Клонируйте репозиторий:
    ```bash
    git clone https://github.com/AndreyTorkhov/todo-golang.git
