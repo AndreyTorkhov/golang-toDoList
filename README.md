@@ -10,6 +10,8 @@
 - **PostgreSQL** - реляционная база данных для хранения задач.
 - **Chi** - маршрутизатор для обработки HTTP-запросов.
 - **pgx** - библиотека для работы с PostgreSQL в Go.
+- **docker** - платформа для разработки, доставки и эксплуатации приложений.
+- **swagger** - это набор инструментов для создания документации к API.
 
 ## Установка
 
@@ -18,16 +20,16 @@
    git clone https://github.com/AndreyTorkhov/todo-golang.git
    cd todo-golang
    ```
-2. Установка зависимостей:
+2. Запуск контейнеров:
 
    ```bash
-    go mod tidy
+    docker-compose up --build
    ```
 
-3. Запуск:
+3. Остановка контейнеров:
 
    ```bash
-    go run cmd/todo-server/main.go
+    docker-compose stop
    ```
 
 ## Используемые функции

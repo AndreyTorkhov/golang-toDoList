@@ -29,12 +29,7 @@ func NewPostgresTaskRepository(db *pgxpool.Pool) *PostgresTaskRepository {
 }
 
 func NewPostgresDB(dsn string) (*pgxpool.Pool, error) {
-    config, err := pgxpool.ParseConfig(dsn)
-    if err != nil {
-        return nil, fmt.Errorf("failed to parse DSN: %w", err)
-    }
-
-    dbpool, err := pgxpool.New(context.Background(), config.ConnString())
+    dbpool, err := pgxpool.New(context.Background(), dsn)
     if err != nil {
         return nil, fmt.Errorf("failed to create connection pool: %w", err)
     }

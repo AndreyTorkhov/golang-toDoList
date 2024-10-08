@@ -20,7 +20,7 @@ import (
 // @BasePath /
 
 func main() {
-    dsn := "postgres://postgres:Aat8912000!@localhost:5432"
+    dsn := "postgres://postgres:Aat8912000!@my_db:5432/tasks"
 
     db, err := storage.NewPostgresDB(dsn)
     if err != nil {
